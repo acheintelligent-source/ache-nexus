@@ -1,0 +1,1 @@
+web: python nexus_bridge_v2.py --node nexus

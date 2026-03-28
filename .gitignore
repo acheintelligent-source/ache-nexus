@@ -1,0 +1,5 @@
+﻿ache_memory.db
+ache_log.jsonl
+__pycache__/
+*.pyc
+.env
