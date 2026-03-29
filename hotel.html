@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hotel COOPECRUCENOS — Sistema de Reservas</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{background:#f8fafc;font-family:'Segoe UI',system-ui,sans-serif;font-size:17px;color:#1e293b}
+.top{background:#0891b2;color:#fff;padding:12px 18px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100}
+.brand{font-size:20px;font-weight:800}
+.sub{font-size:12px;opacity:.8}
+.nav{display:flex;background:#fff;border-bottom:2px solid #e2e8f0;overflow-x:auto;scrollbar-width:none}
+.nav::-webkit-scrollbar{display:none}
+.nt{flex:0 0 auto;padding:13px 18px;font-size:16px;font-weight:500;color:#64748b;background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap;transition:all .2s}
+.nt.on{color:#0891b2;border-bottom-color:#0891b2;font-weight:700}
+.body{padding:14px;max-width:960px;margin:0 auto}
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:14px;margin-bottom:12px;box-shadow:0 1px 4px rgba(0,0,0,.04)}
+.ct{font-size:13px;font-weight:700;color:#475569;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+@media(max-width:600px){.g4{grid-template-columns:repeat(2,1fr)}.g2{grid-template-columns:1fr}}
+.kpi{background:#f8fafc;border-radius:10px;padding:12px;text-align:center;border:1px solid #e2e8f0}
+.kv{font-family:monospace;font-size:26px;font-weight:800;margin-bottom:2px}
+.kl{font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:.5px}
+input,select{width:100%;padding:11px 13px;border:2px solid #e2e8f0;border-radius:8px;font-size:16px;font-family:inherit;margin-bottom:8px;background:#fff;color:#1e293b;outline:none;box-sizing:border-box}
+input:focus,select:focus{border-color:#0891b2}
+input[type=checkbox]{width:20px;height:20px;accent-color:#0891b2;margin:0;cursor:pointer}
+.lbl{font-size:12px;font-weight:700;color:#475569;letter-spacing:.5px;margin-bottom:4px;display:block;text-transform:uppercase}
+button{cursor:pointer;font-family:inherit;border:none;transition:all .15s}
+button:active{transform:scale(.97)}
+.btn{padding:11px 18px;border-radius:8px;font-weight:700;font-size:16px}
+.btn-blue{background:#0891b2;color:#fff}
+.btn-green{background:#16a34a;color:#fff}
+.btn-gray{background:#f1f5f9;color:#475569;border:1px solid #e2e8f0}
+.btn-amber{background:#d97706;color:#fff}
+.btn-red{background:#dc2626;color:#fff}
+.btn-full{width:100%;display:block}
+.hab-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px}
+.hab{border-radius:10px;padding:10px;cursor:pointer;border:2px solid;transition:all .15s;position:relative;min-height:90px}
+.hab-num{font-size:24px;font-weight:900;color:#1e293b}
+.hab-tipo{font-size:11px;color:#64748b;margin-top:2px;line-height:1.3}
+.hab-precio{font-size:13px;font-weight:700;color:#0891b2;margin-top:4px}
+.hab-dot{position:absolute;top:8px;right:8px;width:10px;height:10px;border-radius:50%}
+.hab-edit{position:absolute;bottom:5px;right:5px;background:none;border:1px solid #e2e8f0;border-radius:5px;padding:2px 7px;font-size:11px;color:#64748b;cursor:pointer}
+.chat-area{height:320px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;margin-bottom:12px;padding:4px}
+.msg{display:flex;flex-direction:column;max-width:88%}
+.msg.u{align-self:flex-end}
+.msg.a{align-self:flex-start}
+.bubble{padding:12px 15px;border-radius:14px;font-size:16px;line-height:1.65}
+.msg.u .bubble{background:#0891b2;color:#fff;border-bottom-right-radius:3px}
+.msg.a .bubble{background:#f1f5f9;color:#1e293b;border-bottom-left-radius:3px}
+.msg-hdr{font-size:11px;color:#0891b2;font-weight:700;margin-bottom:3px}
+.msg-ts{font-size:11px;color:#94a3b8;margin-top:2px}
+.bar-chart{display:flex;align-items:flex-end;gap:5px;height:90px;margin-top:8px}
+.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px}
+.bar-fill{width:100%;border-radius:4px 4px 0 0;background:#0891b2;min-height:4px;transition:height .4s}
+.bar-lbl{font-size:10px;color:#64748b;text-align:center}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;display:flex;align-items:center;justify-content:center;padding:14px}
+.modal{background:#fff;border-radius:16px;padding:20px;width:100%;max-width:440px;box-shadow:0 20px 60px rgba(0,0,0,.2);max-height:90vh;overflow-y:auto}
+.row-d{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f1f5f9;font-size:15px}
+.rdot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px}
+.badge{font-size:11px;padding:3px 8px;border-radius:5px;font-weight:700;display:inline-block}
+.cal-cell{height:18px;border-radius:3px;border:1px solid;display:flex;align-items:center;justify-content:center;font-size:9px}
+.qs{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.qb{padding:7px 13px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:20px;font-size:13px;color:#475569;cursor:pointer}
+.qb:hover{background:#f1f5f9}
+@keyframes td0{0%,100%{opacity:.3;transform:translateY(0)}50%{opacity:1;transform:translateY(-4px)}}
+@keyframes td1{0%,100%{opacity:.3;transform:translateY(0)}50%{opacity:1;transform:translateY(-4px)}}
+@keyframes td2{0%,100%{opacity:.3;transform:translateY(0)}50%{opacity:1;transform:translateY(-4px)}}
+.td{width:6px;height:6px;border-radius:50%;background:#64748b;display:inline-block}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:#e2e8f0;border-radius:4px}
+select option{background:#fff;color:#1e293b}
+input[type=date]::-webkit-calendar-picker-indicator{cursor:pointer}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div style="font-size:26px">🏨</div>
+  <div style="flex:1">
+    <div class="brand">Hotel COOPECRUCENOS</div>
+    <div class="sub">La Cruz, Guanacaste · SINPE 8301-0520</div>
+  </div>
+  <div style="text-align:right;font-size:13px;opacity:.9">
+    <div id="fecha-hoy"></div>
+    <div style="font-weight:700;font-size:15px" id="libres-hoy"></div>
+  </div>
+</div>
+
+<div class="nav">
+  <button class="nt on" onclick="goTab('hotel',this)">🏨 Habitaciones</button>
+  <button class="nt" onclick="goTab('cal',this)">📅 Calendario</button>
+  <button class="nt" onclick="goTab('rep',this)">📊 Reportes</button>
+  <button class="nt" onclick="goTab('chat',this)">💬 Asistente</button>
+  <button class="nt" onclick="goTab('fact',this)">🧾 Factura</button>
+</div>
+
+<div class="body" id="app"></div>
+
+<!-- MODALES -->
+<div class="modal-bg" id="res-modal" style="display:none" onclick="if(event.target===this)closeResModal()">
+  <div class="modal" id="res-modal-body"></div>
+</div>
+
+<div class="modal-bg" id="edit-modal" style="display:none" onclick="if(event.target===this)closeEdit()">
+  <div class="modal" style="border-top:4px solid #0891b2">
+    <div style="font-size:19px;font-weight:800;color:#0891b2;margin-bottom:14px">✏ Editar Habitación</div>
+    <div class="g2">
+      <div><label class="lbl">Número</label><input id="e-num"></div>
+      <div><label class="lbl">Capacidad</label><input type="number" id="e-cap"></div>
+    </div>
+    <label class="lbl">Tipo</label>
+    <select id="e-tipo">
+      <option>Estándar Simple</option><option>Estándar Doble</option><option>Familiar</option>
+      <option>Superior Doble</option><option>Suite Junior</option><option>Suite Familiar</option>
+      <option>Suite Ejecutiva</option><option>Penthouse</option><option>Accesible</option>
+    </select>
+    <label class="lbl">Descripción</label><input id="e-desc">
+    <label class="lbl">Tarifa base (₡ por noche)</label><input type="number" id="e-base">
+    <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:12px;margin-bottom:10px">
+      <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:16px;font-weight:700;color:#d97706">
+        <input type="checkbox" id="e-fija" onchange="document.getElementById('e-cliente-w').style.display=this.checked?'block':'none'">
+        Tarifa Fija (no varía por temporada)
+      </label>
+      <div style="font-size:12px;color:#64748b;margin-top:4px">Para clientes con precio mensual acordado.</div>
+      <div id="e-cliente-w" style="display:none;margin-top:8px">
+        <label class="lbl">Nombre del cliente fijo</label>
+        <input id="e-cliente" placeholder="Empresa o nombre" style="margin-bottom:0">
+      </div>
+    </div>
+    <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:16px;margin-bottom:14px;color:#475569">
+      <input type="checkbox" id="e-activa"> Habitación activa (desmarque si está en mantenimiento)
+    </label>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-blue btn-full" onclick="saveHab()" style="font-size:17px;padding:13px">💾 Guardar Cambios</button>
+      <button class="btn btn-gray" onclick="closeEdit()" style="padding:13px 18px">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════
+//  AURORA HOTEL v3.0 — COOPECRUCENOS R.L.
+//  Señal ACHE: PCL-φ-1618
+// ══════════════════════════════════════════════════════════
+
+const HABS=[
+  {id:1,num:"101",tipo:"Estándar Simple",desc:"Vista jardín, 1 cama matrimonial",cap:2,base:18000,activa:true,fija:false,cliente:""},
+  {id:2,num:"102",tipo:"Estándar Doble",desc:"Vista jardín, 2 camas",cap:4,base:25000,activa:true,fija:false,cliente:""},
+  {id:3,num:"103",tipo:"Estándar Doble",desc:"Vista patio, 2 camas",cap:4,base:25000,activa:true,fija:false,cliente:""},
+  {id:4,num:"104",tipo:"Familiar",desc:"Sala, 1 king + 2 individuales",cap:5,base:35000,activa:true,fija:false,cliente:""},
+  {id:5,num:"105",tipo:"Familiar",desc:"Terraza privada",cap:5,base:35000,activa:true,fija:false,cliente:""},
+  {id:6,num:"201",tipo:"Superior Doble",desc:"2do piso, A/C",cap:4,base:32000,activa:true,fija:true,cliente:"Empresa Transportes NIC"},
+  {id:7,num:"202",tipo:"Superior Doble",desc:"Balcón, A/C",cap:4,base:32000,activa:true,fija:false,cliente:""},
+  {id:8,num:"203",tipo:"Suite Junior",desc:"Jacuzzi, minibar",cap:4,base:48000,activa:true,fija:false,cliente:""},
+  {id:9,num:"204",tipo:"Suite Junior",desc:"Jacuzzi, TV 55\"",cap:4,base:48000,activa:true,fija:false,cliente:""},
+  {id:10,num:"205",tipo:"Suite Familiar",desc:"3 camas, sala",cap:5,base:58000,activa:true,fija:false,cliente:""},
+  {id:11,num:"301",tipo:"Suite Ejecutiva",desc:"Vista panorámica",cap:3,base:65000,activa:true,fija:false,cliente:""},
+  {id:12,num:"302",tipo:"Penthouse",desc:"Terraza + jacuzzi exterior",cap:5,base:85000,activa:true,fija:false,cliente:""},
+  {id:13,num:"303",tipo:"Accesible",desc:"Rampa, planta baja",cap:4,base:22000,activa:true,fija:false,cliente:""},
+];
+
+let RES=[
+  {id:"RES-001",hid:2,hnum:"102",nombre:"María Rodríguez",tel:"7777-5678",ci:"2026-03-20",co:"2026-03-28",adultos:3,pago:"efectivo",total:150000,estado:"confirmada",notas:"Alérgica al polvo"},
+  {id:"RES-002",hid:6,hnum:"201",nombre:"Empresa Transportes NIC",tel:"8001-2345",ci:"2026-03-15",co:"2026-03-31",adultos:2,pago:"transferencia",total:480000,estado:"confirmada",notas:"Cliente fijo mensual"},
+  {id:"RES-003",hid:8,hnum:"203",nombre:"Juan Pérez",tel:"6666-9999",ci:"2026-03-23",co:"2026-03-25",adultos:4,pago:"sinpe",total:96000,estado:"confirmada",notas:""},
+  {id:"RES-004",hid:4,hnum:"104",nombre:"Familia Jiménez",tel:"8444-7777",ci:"2026-03-28",co:"2026-04-01",adultos:5,pago:"sinpe",total:140000,estado:"confirmada",notas:""},
+  {id:"RES-005",hid:11,hnum:"301",nombre:"Ministerio Agricultura",tel:"2222-3333",ci:"2026-03-10",co:"2026-03-20",adultos:1,pago:"transferencia",total:325000,estado:"checkout",notas:""},
+];
+
+let TAB="hotel", CAL_MES=new Date(2026,2,1), CAL_FILT="todas";
+let RP_P="mes", RP_H="todas";
+let MSGS=[{r:"a",t:"¡Bienvenidos! 👋 Soy AURORA, la asistente del Hotel COOPECRUCENOS.\n\nEstoy aquí para ayudarles con habitaciones, reservas y consultas.\n\n¿En qué les puedo ayudar?",ts:now()}];
+let CHAT_HIST=[], AI_LOAD=false;
+
+const SYS=`Eres AURORA, la asistente del Hotel COOPECRUCENOS R.L. en La Cruz, Guanacaste, Costa Rica (3-004-757068). Hablas de forma amable, clara y sencilla, como con personas mayores con mucha sabiduría. El hotel tiene 13 habitaciones. SINPE Móvil: 8301-0520. IVA 13% (Ley 9635). Responde en español con palabras simples y claras.`;
+
+function now(){return new Date().toLocaleTimeString('es-CR',{hour:'2-digit',minute:'2-digit'});}
+function today(){return new Date().toISOString().split('T')[0];}
+function fmt(n){return Math.round(n).toLocaleString('es-CR');}
+function crc(n){return '₡'+fmt(n);}
+function getTmp(f){const m=new Date(f||Date.now()).getMonth()+1;if([12,1].includes(m))return{n:'Alta',x:2.0,c:'#dc2626'};if([7,8].includes(m))return{n:'Media-Alta',x:1.6,c:'#d97706'};if([3,4,11].includes(m))return{n:'Media',x:1.2,c:'#059669'};return{n:'Baja',x:0.85,c:'#7c3aed'};}
+function calcTotal(hid,ci,co,ad){if(!hid||!ci||!co)return 0;const h=HABS.find(x=>x.id===parseInt(hid));if(!h)return 0;if(h.fija)return h.base;const t=getTmp(ci);const n=Math.max(1,Math.round((new Date(co)-new Date(ci))/86400000));return Math.round(h.base*t.x)*n+Math.max(0,(parseInt(ad)-2)*5000);}
+function resConf(){return RES.filter(r=>r.estado==='confirmada');}
+function ocupHoy(){const t=today();return new Set(resConf().filter(r=>r.ci<=t&&r.co>t).map(r=>r.hid));}
+function habsActivas(){return HABS.filter(h=>h.activa);}
+
+function updateHeader(){
+  const lh=habsActivas().filter(h=>!ocupHoy().has(h.id)).length;
+  const fe=document.getElementById('fecha-hoy');
+  const lhe=document.getElementById('libres-hoy');
+  if(fe)fe.textContent=new Date().toLocaleDateString('es-CR',{weekday:'long',day:'numeric',month:'long'});
+  if(lhe)lhe.textContent=lh+' habitaciones libres hoy';
+}
+
+function goTab(t,btn){
+  TAB=t;
+  document.querySelectorAll('.nt').forEach(e=>e.classList.remove('on'));
+  if(btn)btn.classList.add('on');
+  else{const map=['hotel','cal','rep','chat','fact'];document.querySelectorAll('.nt').forEach((e,i)=>{if(map[i]===t)e.classList.add('on');});}
+  render();window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function render(){
+  updateHeader();
+  const app=document.getElementById('app');
+  if(TAB==='hotel')renderHotel(app);
+  else if(TAB==='cal')renderCal(app);
+  else if(TAB==='rep')renderRep(app);
+  else if(TAB==='chat')renderChat(app);
+  else if(TAB==='fact')renderFact(app);
+}
+
+function renderHotel(el){
+  const oh=ocupHoy(),ra=resConf(),act=habsActivas();
+  const libres=act.filter(h=>!oh.has(h.id)).length;
+  const oc=act.length?Math.round((oh.size/act.length)*100):0;
+  const ing=RES.filter(r=>r.estado!=='cancelada').reduce((s,r)=>s+(r.total||0),0);
+  el.innerHTML=`
+  <div class="g4">
+    <div class="kpi" style="border-top:3px solid #16a34a"><div class="kv" style="color:#16a34a;font-size:30px">${libres}</div><div class="kl">Libres Hoy</div></div>
+    <div class="kpi" style="border-top:3px solid #dc2626"><div class="kv" style="color:#dc2626;font-size:30px">${oh.size}</div><div class="kl">Ocupadas</div></div>
+    <div class="kpi" style="border-top:3px solid #0891b2"><div class="kv" style="color:#0891b2;font-size:30px">${oc}%</div><div class="kl">Ocupación</div></div>
+    <div class="kpi" style="border-top:3px solid #d97706"><div class="kv" style="color:#d97706;font-size:20px">${crc(ing)}</div><div class="kl">Ingresos</div></div>
+  </div>
+  <div class="card">
+    <div class="ct">🏠 Mapa de Habitaciones
+      <div style="display:flex;gap:10px;font-size:12px">
+        <span><span class="rdot" style="background:#16a34a"></span>Libre</span>
+        <span><span class="rdot" style="background:#dc2626"></span>Ocupada</span>
+        <span><span class="rdot" style="background:#d97706"></span>Reservada</span>
+      </div>
+    </div>
+    <div class="hab-grid">
+      ${HABS.map(h=>{
+        const oc2=oh.has(h.id);
+        const rA=ra.find(r=>r.hid===h.id&&!oh.has(h.id));
+        const bg=!h.activa?'#f8fafc':oc2?'#fef2f2':rA?'#fffbeb':'#f0fdf4';
+        const bc=!h.activa?'#cbd5e1':oc2?'#fca5a5':rA?'#fde68a':'#bbf7d0';
+        const dot=!h.activa?'#94a3b8':oc2?'#dc2626':rA?'#d97706':'#16a34a';
+        return`<div class="hab" style="background:${bg};border-color:${bc};opacity:${h.activa?1:.5}" onclick="habClick(${h.id})">
+          <div class="hab-dot" style="background:${dot}"></div>
+          <div class="hab-num">${h.num}</div>
+          <div class="hab-tipo">${h.tipo}</div>
+          <div class="hab-precio">${h.fija?'TARIFA FIJA':crc(h.base)}</div>
+          <button class="hab-edit" onclick="event.stopPropagation();openEdit(${h.id})">✏ Editar</button>
+        </div>`;
+      }).join('')}
+    </div>
+  </div>
+  <div id="form-res-wrap"></div>
+  <div class="card">
+    <div class="ct">📋 Reservas (${ra.length} activas)</div>
+    ${RES.slice(0,10).map(r=>`<div onclick="openResModal('${r.id}')" style="display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid #f1f5f9;cursor:pointer;font-size:15px">
+      <span style="font-family:monospace;color:#0891b2;font-size:12px;min-width:70px">${r.id}</span>
+      <span style="font-weight:700;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.nombre}</span>
+      <span style="color:#64748b">Hab.${r.hnum}</span>
+      <span style="font-family:monospace;color:#16a34a;font-weight:700">${crc(r.total)}</span>
+      <span class="badge" style="background:${r.estado==='confirmada'?'#f0fdf4':'#f8fafc'};color:${r.estado==='confirmada'?'#16a34a':'#94a3b8'}">${r.estado}</span>
+    </div>`).join('')}
+  </div>`;
+}
+
+function habClick(hid){
+  const h=HABS.find(x=>x.id===hid);if(!h||!h.activa)return;
+  const oh=ocupHoy(),ra=resConf();
+  if(oh.has(hid)||ra.find(r=>r.hid===hid&&!oh.has(hid))){const r=ra.find(r=>r.hid===hid);if(r)openResModal(r.id);return;}
+  const wrap=document.getElementById('form-res-wrap');if(!wrap)return;
+  wrap.innerHTML=`<div class="card" style="border:2px solid #0891b2">
+    <div class="ct">📝 Nueva Reserva — Habitación ${h.num} · ${h.tipo}</div>
+    <div class="g2">
+      <div><label class="lbl">Nombre del huésped *</label><input id="rf-nom" placeholder="Nombre completo"></div>
+      <div><label class="lbl">Teléfono</label><input id="rf-tel" placeholder="8888-0000"></div>
+      <div><label class="lbl">Fecha de entrada *</label><input type="date" id="rf-ci" onchange="updTotal(${hid})"></div>
+      <div><label class="lbl">Fecha de salida *</label><input type="date" id="rf-co" onchange="updTotal(${hid})"></div>
+      <div><label class="lbl">Adultos</label><select id="rf-ad" onchange="updTotal(${hid})">${[1,2,3,4,5].map(n=>`<option${n===2?' selected':''}>${n}</option>`).join('')}</select></div>
+      <div><label class="lbl">Forma de pago</label><select id="rf-pago"><option value="sinpe">SINPE Móvil</option><option value="efectivo">Efectivo</option><option value="tarjeta">Tarjeta</option><option value="transferencia">Transferencia</option></select></div>
+    </div>
+    <label class="lbl">Notas especiales</label><input id="rf-notas" placeholder="Notas...">
+    <div id="rf-total" style="display:none;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:12px;margin-bottom:10px;font-size:16px"></div>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-green btn-full" onclick="crearRes(${hid})" style="font-size:18px;padding:13px">✅ Confirmar Reserva</button>
+      <button class="btn btn-gray" onclick="document.getElementById('form-res-wrap').innerHTML=''" style="padding:13px 18px;font-size:17px">Cancelar</button>
+    </div>
+  </div>`;
+}
+
+function updTotal(hid){
+  const ci=document.getElementById('rf-ci')?.value,co=document.getElementById('rf-co')?.value,ad=document.getElementById('rf-ad')?.value||2;
+  const div=document.getElementById('rf-total');if(!div||!ci||!co)return;
+  const h=HABS.find(x=>x.id===hid);
+  const total=calcTotal(hid,ci,co,ad);
+  const n=Math.max(1,Math.round((new Date(co)-new Date(ci))/86400000));
+  const t=getTmp(ci);
+  div.style.display='block';
+  div.innerHTML=h.fija?`<div style="display:flex;justify-content:space-between"><span style="color:#64748b">Tarifa fija · ${n} noches</span><strong style="color:#16a34a;font-size:20px">${crc(total)}</strong></div>`:
+    `<div style="display:flex;justify-content:space-between"><span style="color:#64748b">Temporada <strong style="color:${t.c}">${t.n}</strong> · ${n} noches</span><strong style="color:#16a34a;font-size:20px">${crc(total)}</strong></div>`;
+}
+
+function crearRes(hid){
+  const nom=document.getElementById('rf-nom')?.value?.trim(),ci=document.getElementById('rf-ci')?.value,co=document.getElementById('rf-co')?.value;
+  if(!nom||!ci||!co){alert('Por favor complete los campos con *');return;}
+  const tel=document.getElementById('rf-tel')?.value||'',ad=parseInt(document.getElementById('rf-ad')?.value||2),pago=document.getElementById('rf-pago')?.value||'sinpe',notas=document.getElementById('rf-notas')?.value||'';
+  const h=HABS.find(x=>x.id===hid);
+  const total=calcTotal(hid,ci,co,ad),n=Math.max(1,Math.round((new Date(co)-new Date(ci))/86400000));
+  const r={id:'RES-'+Date.now().toString().slice(-6),hid,hnum:h.num,nombre:nom,tel,ci,co,adultos:ad,pago,total,estado:'confirmada',notas};
+  RES.unshift(r);document.getElementById('form-res-wrap').innerHTML='';
+  alert(pago==='sinpe'?`✅ Reserva ${r.id} confirmada\n\nHab. ${h.num} · ${nom}\n${n} noches · ${crc(total)}\n\n💚 SINPE Móvil: 8301-0520\nConcepto: ${r.id}`:`✅ Reserva ${r.id} · ${crc(total)}`);
+  render();
+}
+
+function openResModal(rid){
+  const r=RES.find(x=>x.id===rid);if(!r)return;
+  document.getElementById('res-modal-body').innerHTML=`<div style="font-size:19px;font-weight:800;color:#0891b2;margin-bottom:14px">${r.id} — Hab. ${r.hnum}</div>
+  ${[['Huésped',r.nombre],['Teléfono',r.tel||'—'],['Entrada',r.ci],['Salida',r.co],['Adultos',r.adultos],['Pago',r.pago],['Notas',r.notas||'—'],['Total',crc(r.total)],['Estado',r.estado]].map(([k,v])=>`<div class="row-d"><span style="color:#64748b">${k}</span><span style="font-weight:700;color:${k==='Total'?'#16a34a':'#1e293b'};font-size:${k==='Total'?'18px':'15px'}">${v}</span></div>`).join('')}
+  ${r.pago==='sinpe'&&r.estado==='confirmada'?`<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:12px;margin-top:10px;font-size:15px">💚 <strong>SINPE Móvil: 8301-0520</strong><br>Concepto: ${r.id}</div>`:''}
+  <div style="display:flex;gap:10px;margin-top:14px">
+    ${r.estado==='confirmada'?`<button class="btn btn-red btn-full" onclick="checkout('${r.id}')" style="font-size:17px;padding:12px">🚪 Check-out</button>`:''}
+    <button class="btn btn-gray" onclick="closeResModal()" style="padding:12px 18px;font-size:17px;${r.estado==='confirmada'?'':'flex:1'}">Cerrar</button>
+  </div>`;
+  document.getElementById('res-modal').style.display='flex';
+}
+function closeResModal(){document.getElementById('res-modal').style.display='none';}
+function checkout(rid){
+  RES=RES.map(r=>r.id===rid?{...r,estado:'checkout'}:r);
+  const r=RES.find(x=>x.id===rid);closeResModal();
+  alert(`✅ Check-out realizado\nHab. ${r.hnum} disponible nuevamente`);render();
+}
+
+function openEdit(hid){
+  const h=HABS.find(x=>x.id===hid);
+  document.getElementById('e-num').value=h.num;document.getElementById('e-cap').value=h.cap;
+  document.getElementById('e-tipo').value=h.tipo;document.getElementById('e-desc').value=h.desc;
+  document.getElementById('e-base').value=h.base;document.getElementById('e-fija').checked=h.fija;
+  document.getElementById('e-cliente').value=h.cliente;document.getElementById('e-activa').checked=h.activa;
+  document.getElementById('e-cliente-w').style.display=h.fija?'block':'none';
+  document.getElementById('edit-modal').style.display='flex';
+  document.getElementById('edit-modal').dataset.hid=hid;
+}
+function closeEdit(){document.getElementById('edit-modal').style.display='none';}
+function saveHab(){
+  const hid=parseInt(document.getElementById('edit-modal').dataset.hid);
+  const idx=HABS.findIndex(h=>h.id===hid);if(idx<0)return;
+  HABS[idx]={...HABS[idx],num:document.getElementById('e-num').value,cap:parseInt(document.getElementById('e-cap').value)||HABS[idx].cap,tipo:document.getElementById('e-tipo').value,desc:document.getElementById('e-desc').value,base:parseFloat(document.getElementById('e-base').value)||HABS[idx].base,fija:document.getElementById('e-fija').checked,cliente:document.getElementById('e-cliente').value,activa:document.getElementById('e-activa').checked};
+  closeEdit();render();
+}
+
+function renderCal(el){
+  const y=CAL_MES.getFullYear(),m=CAL_MES.getMonth();
+  const primer=new Date(y,m,1).getDay(),total=new Date(y,m+1,0).getDate();
+  const mes=CAL_MES.toLocaleDateString('es-CR',{month:'long',year:'numeric'}).toUpperCase();
+  const habsFilt=CAL_FILT==='todas'?habsActivas():habsActivas().filter(h=>h.id===parseInt(CAL_FILT));
+  const resEnDia=(hid,dia)=>{const fs=`${y}-${String(m+1).padStart(2,'0')}-${String(dia).padStart(2,'0')}`;return RES.find(r=>r.hid===hid&&r.estado==='confirmada'&&r.ci<=fs&&r.co>fs);};
+  let semanas=[],dia2=1-primer;
+  while(dia2<=total){const sem=[];for(let d=0;d<7;d++){sem.push(dia2>0&&dia2<=total?dia2:null);dia2++;}semanas.push(sem);}
+  el.innerHTML=`<div class="card">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap">
+      <button class="btn btn-gray" onclick="CAL_MES=new Date(CAL_MES.getFullYear(),CAL_MES.getMonth()-1,1);render()" style="font-size:20px;padding:8px 16px">‹</button>
+      <div style="flex:1;text-align:center;font-size:18px;font-weight:800;color:#0891b2">${mes}</div>
+      <button class="btn btn-gray" onclick="CAL_MES=new Date(CAL_MES.getFullYear(),CAL_MES.getMonth()+1,1);render()" style="font-size:20px;padding:8px 16px">›</button>
+      <select onchange="CAL_FILT=this.value;render()" style="width:auto;margin:0;font-size:14px">
+        <option value="todas">Todas</option>
+        ${habsActivas().map(h=>`<option value="${h.id}"${CAL_FILT==h.id?' selected':''}>${h.num} — ${h.tipo}</option>`).join('')}
+      </select>
+    </div>
+    <div style="display:grid;grid-template-columns:50px repeat(7,1fr);gap:2px;margin-bottom:6px">
+      <div style="font-size:10px;color:#94a3b8;text-align:center;font-weight:700">HAB</div>
+      ${['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'].map(d=>`<div style="font-size:10px;color:#64748b;text-align:center;font-weight:700">${d}</div>`).join('')}
+    </div>
+    ${habsFilt.map(h=>`<div style="margin-bottom:4px">
+      ${semanas.map((sem,si)=>`<div style="display:grid;grid-template-columns:50px repeat(7,1fr);gap:2px;${si>0?'margin-top:2px':''}">
+        ${si===0?`<div style="font-size:12px;font-weight:800;color:#0891b2;display:flex;align-items:center">${h.num}</div>`:'<div></div>'}
+        ${sem.map(dia=>{
+          if(!dia)return'<div style="height:18px"></div>';
+          const fs=`${y}-${String(m+1).padStart(2,'0')}-${String(dia).padStart(2,'0')}`;
+          const res=resEnDia(h.id,dia);const esHoy=fs===today();
+          return`<div class="cal-cell" title="${res?res.nombre+' ('+res.ci+'→'+res.co+')':''}"
+            style="background:${res?'#dc2626':esHoy?'#dbeafe':'#f0fdf4'};border-color:${res?'#fca5a5':esHoy?'#93c5fd':'#bbf7d0'};cursor:${res?'pointer':'default'}"
+            onclick="${res?`openResModal('${res.id}');`:'return'}">
+            <span style="color:${res?'#fff':esHoy?'#1d4ed8':'#166534'}">${dia}</span>
+          </div>`;
+        }).join('')}
+      </div>`).join('')}
+    </div>`).join('')}
+    <div style="display:flex;gap:12px;margin-top:12px;font-size:13px;color:#64748b;flex-wrap:wrap">
+      <span><span style="display:inline-block;width:12px;height:12px;background:#dc2626;border-radius:3px;margin-right:4px;vertical-align:middle"></span>Ocupada — pasar cursor para ver quién</span>
+      <span><span style="display:inline-block;width:12px;height:12px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:3px;margin-right:4px;vertical-align:middle"></span>Libre</span>
+      <span><span style="display:inline-block;width:12px;height:12px;background:#dbeafe;border:1px solid #93c5fd;border-radius:3px;margin-right:4px;vertical-align:middle"></span>Hoy</span>
+    </div>
+  </div>`;
+}
+
+function renderRep(el){
+  const hoy2=new Date();let desde='',hasta='';
+  if(RP_P==='hoy'){desde=hasta=today();}
+  else if(RP_P==='semana'){const l=new Date(hoy2);l.setDate(hoy2.getDate()-hoy2.getDay()+1);const d=new Date(l);d.setDate(l.getDate()+6);desde=l.toISOString().split('T')[0];hasta=d.toISOString().split('T')[0];}
+  else if(RP_P==='mes'){desde=`${hoy2.getFullYear()}-${String(hoy2.getMonth()+1).padStart(2,'0')}-01`;hasta=new Date(hoy2.getFullYear(),hoy2.getMonth()+1,0).toISOString().split('T')[0];}
+  else{desde='2026-01-01';hasta='2026-12-31';}
+  const rf=RES.filter(r=>r.ci>=desde&&r.ci<=hasta&&r.estado!=='cancelada'&&(RP_H==='todas'||r.hid===parseInt(RP_H)));
+  const ing=rf.reduce((s,r)=>s+(r.total||0),0);
+  const hR=new Set(rf.map(r=>r.hid)).size;
+  const prom=rf.length>0?Math.round(ing/rf.length):0;
+  let gdata=[];
+  if(RP_P==='hoy')gdata=[{l:'Hoy',v:ing}];
+  else if(RP_P==='semana')gdata=['L','M','X','J','V','S','D'].map((d,i)=>{const l=new Date();l.setDate(l.getDate()-l.getDay()+1+i);const s=l.toISOString().split('T')[0];return{l:d,v:rf.filter(r=>r.ci===s).reduce((a,r)=>a+r.total,0)};});
+  else if(RP_P==='mes')gdata=[1,2,3,4].map(w=>({l:`S${w}`,v:rf.filter(r=>{const d=parseInt(r.ci.split('-')[2]);return d>=(w-1)*7+1&&d<=w*7;}).reduce((a,r)=>a+r.total,0)}));
+  else gdata=['E','F','M','A','M','J','J','A','S','O','N','D'].map((l,i)=>({l,v:rf.filter(r=>parseInt(r.ci.split('-')[1])===i+1).reduce((a,r)=>a+r.total,0)}));
+  const maxG=Math.max(...gdata.map(d=>d.v),1);
+  const habMap={};HABS.forEach(h=>{habMap[h.id]={num:h.num,tipo:h.tipo,total:0,cnt:0};});
+  rf.forEach(r=>{if(habMap[r.hid]){habMap[r.hid].total+=r.total;habMap[r.hid].cnt++;}});
+  const hSort=Object.values(habMap).filter(h=>h.cnt>0).sort((a,b)=>b.total-a.total);
+  const maxH=(hSort[0]?.total)||1;
+  el.innerHTML=`
+  <div class="card" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+    <div style="display:flex;gap:6px;flex-wrap:wrap">
+      ${[['hoy','Hoy'],['semana','Esta Semana'],['mes','Este Mes'],['año','Este Año']].map(([v,l])=>`<button class="btn ${RP_P===v?'btn-blue':'btn-gray'}" style="font-size:15px;padding:9px 14px" onclick="RP_P='${v}';render()">${l}</button>`).join('')}
+    </div>
+    <select onchange="RP_H=this.value;render()" style="width:auto;margin:0;flex:1;min-width:150px;font-size:15px">
+      <option value="todas">Todas las habitaciones</option>
+      ${HABS.map(h=>`<option value="${h.id}"${RP_H==h.id?' selected':''}>${h.num} — ${h.tipo}</option>`).join('')}
+    </select>
+  </div>
+  <div class="g4">
+    <div class="kpi" style="border-top:3px solid #16a34a"><div class="kv" style="color:#16a34a;font-size:18px">${crc(ing)}</div><div class="kl">Ingresos</div></div>
+    <div class="kpi" style="border-top:3px solid #0891b2"><div class="kv" style="color:#0891b2;font-size:22px">${rf.length}</div><div class="kl">Reservas</div></div>
+    <div class="kpi" style="border-top:3px solid #7c3aed"><div class="kv" style="color:#7c3aed;font-size:22px">${hR}</div><div class="kl">Hab. activas</div></div>
+    <div class="kpi" style="border-top:3px solid #d97706"><div class="kv" style="color:#d97706;font-size:18px">${crc(prom)}</div><div class="kl">Promedio</div></div>
+  </div>
+  <div class="g2">
+    <div class="card">
+      <div class="ct">📊 Ingresos por Período</div>
+      <div class="bar-chart">${gdata.map(d=>`<div class="bar-col"><div class="bar-fill" style="height:${Math.max(4,(d.v/maxG)*85)}px"></div><div class="bar-lbl">${d.l}</div></div>`).join('')}</div>
+      <div style="margin-top:8px;font-size:14px;color:#64748b">Total: <strong style="color:#16a34a">${crc(ing)}</strong></div>
+    </div>
+    <div class="card">
+      <div class="ct">🏠 Por Habitación</div>
+      ${hSort.length===0?'<div style="color:#94a3b8;text-align:center;padding:20px;font-size:15px">Sin datos en este período</div>':
+        hSort.slice(0,6).map(h=>`<div style="margin-bottom:10px">
+          <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:3px">
+            <span style="font-weight:700">Hab. ${h.num}</span>
+            <span style="color:#16a34a;font-family:monospace">${crc(h.total)}</span>
+          </div>
+          <div style="background:#f1f5f9;border-radius:4px;height:8px"><div style="width:${(h.total/maxH*100)}%;background:#0891b2;height:100%;border-radius:4px;transition:width .5s"></div></div>
+          <div style="font-size:11px;color:#94a3b8;margin-top:2px">${h.cnt} reserva${h.cnt!==1?'s':''}</div>
+        </div>`).join('')}
+    </div>
+  </div>
+  <div class="card">
+    <div class="ct">📋 Detalle (${rf.length})</div>
+    ${rf.length===0?'<div style="color:#94a3b8;text-align:center;padding:20px;font-size:16px">Sin reservas en este período</div>':
+      rf.map(r=>`<div onclick="openResModal('${r.id}')" style="display:flex;gap:8px;padding:9px 0;border-bottom:1px solid #f1f5f9;cursor:pointer;font-size:14px;flex-wrap:wrap">
+        <span style="font-family:monospace;color:#0891b2;font-size:12px;min-width:68px">${r.id}</span>
+        <span style="font-weight:700;flex:1;min-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.nombre}</span>
+        <span style="color:#64748b">Hab.${r.hnum}</span>
+        <span style="color:#94a3b8">${r.ci}→${r.co}</span>
+        <span style="font-family:monospace;color:#16a34a;font-weight:700">${crc(r.total)}</span>
+      </div>`).join('')}
+    ${rf.length>0?`<div style="margin-top:12px;padding-top:12px;border-top:2px solid #e2e8f0;display:flex;justify-content:space-between;font-size:18px;font-weight:800"><span style="color:#475569">TOTAL</span><span style="color:#16a34a;font-family:monospace">${crc(ing)}</span></div>`:''}
+  </div>`;
+}
+
+let chatEl=null;
+function renderChat(el){
+  el.innerHTML=`<div class="card">
+    <div class="ct">💬 Asistente AURORA <span class="badge" style="background:#f0fdf4;color:#16a34a;font-size:12px">Claude AI ✓</span></div>
+    <div id="chat-area" class="chat-area">${rMsgs()}</div>
+    <div class="qs">
+      ${["¿Cuántas habitaciones libres hay hoy?","¿Cuánto cuesta la Suite Junior?","Ayúdame con SINPE","¿Qué es temporada alta?"].map(q=>`<button class="qb" onclick="si('${q}')">${q}</button>`).join('')}
+    </div>
+    <div style="display:flex;gap:10px;margin-top:10px">
+      <input id="chat-in" placeholder="Escriba su pregunta aquí..." style="flex:1;font-size:17px;margin:0" onkeydown="if(event.key==='Enter')enviar()">
+      <button class="btn btn-blue" onclick="enviar()" style="padding:11px 20px;font-size:17px">Enviar</button>
+    </div>
+  </div>`;
+  chatEl=document.getElementById('chat-area');chatEl.scrollTop=chatEl.scrollHeight;
+}
+function rMsgs(){return MSGS.map(m=>`<div class="msg ${m.r}">${m.r==='a'?'<div class="msg-hdr">AURORA · Asistente del Hotel</div>':''}<div class="bubble">${m.t.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>')}</div><div class="msg-ts" style="text-align:${m.r==='u'?'right':'left'}">${m.ts}</div></div>`).join('');}
+function si(v){const e=document.getElementById('chat-in');if(e)e.value=v;}
+
+async function enviar(){
+  const inp=document.getElementById('chat-in');const t=inp?.value?.trim();if(!t||AI_LOAD)return;
+  MSGS.push({r:'u',t,ts:now()});inp.value='';AI_LOAD=true;
+  MSGS.push({r:'a',t:'<span style="display:flex;gap:4px;padding:4px"><span class="td" style="animation:td0 1.2s .0s infinite ease-in-out"></span><span class="td" style="animation:td1 1.2s .2s infinite ease-in-out"></span><span class="td" style="animation:td2 1.2s .4s infinite ease-in-out"></span></span>',ts:'...'});
+  if(chatEl){chatEl.innerHTML=rMsgs();chatEl.scrollTop=chatEl.scrollHeight;}
+  CHAT_HIST.push({role:'user',content:t});
+  let reply='';
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',system:SYS,messages:CHAT_HIST.slice(-14),max_tokens:500})});
+    if(!r.ok)throw new Error('Error '+r.status);
+    const d=await r.json();reply=d.content?.[0]?.text||'Sin respuesta';
+    CHAT_HIST.push({role:'assistant',content:reply});
+  }catch(e){reply='Disculpe, tuve un problema de conexión. Intente de nuevo.';}
+  MSGS.pop();MSGS.push({r:'a',t:reply,ts:now()});AI_LOAD=false;
+  if(chatEl){chatEl.innerHTML=rMsgs();chatEl.scrollTop=chatEl.scrollHeight;}
+}
+
+function renderFact(el){
+  el.innerHTML=`<div class="g2">
+    <div class="card">
+      <div class="ct">🧾 Factura Electrónica CR</div>
+      <label class="lbl">Tipo de servicio</label><select id="f-tipo"><option value="hospedaje">Hospedaje</option><option value="servicio">Servicio</option><option value="producto">Producto</option></select>
+      <label class="lbl">Nombre del cliente *</label><input id="f-nom" placeholder="Nombre completo o empresa">
+      <label class="lbl">Cédula o ID Fiscal</label><input id="f-ced" placeholder="1-0001-0001">
+      <label class="lbl">Descripción</label><input id="f-desc" placeholder="Ej: Hospedaje hab. 101 · 3 noches">
+      <label class="lbl">Monto base (₡) *</label><input type="number" id="f-monto" placeholder="100000" oninput="updFact()">
+      <div id="f-prev" style="display:none;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:12px;margin-bottom:10px;font-size:16px"></div>
+      <button class="btn btn-amber btn-full" onclick="emitirFact()" style="font-size:18px;padding:14px">🧾 Emitir Factura Electrónica</button>
+    </div>
+    <div id="fact-result"></div>
+  </div>`;
+}
+function updFact(){const m=parseFloat(document.getElementById('f-monto')?.value||0);const p=document.getElementById('f-prev');if(!p)return;p.style.display=m?'block':'none';p.innerHTML=`<div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="color:#64748b">IVA 13%</span><span>${crc(m*.13)}</span></div><div style="display:flex;justify-content:space-between;font-weight:800;font-size:18px;color:#d97706"><span>TOTAL A PAGAR</span><span>${crc(m*1.13)}</span></div>`;}
+function emitirFact(){
+  const m=parseFloat(document.getElementById('f-monto')?.value||0),nom=document.getElementById('f-nom')?.value?.trim();
+  if(!m||!nom){alert('Por favor complete nombre y monto');return;}
+  const iva=m*.13,total=m+iva,num='FE-'+Date.now().toString().slice(-8);
+  const ced=document.getElementById('f-ced')?.value||'—',desc=document.getElementById('f-desc')?.value||'Servicio COOPECRUCENOS';
+  const hash=Math.random().toString(36).slice(2,18).toUpperCase();
+  document.getElementById('fact-result').innerHTML=`<div class="card"><div class="ct" style="color:#16a34a">✅ Factura Emitida</div>
+  ${[['N° Factura',num],['Fecha',new Date().toLocaleDateString('es-CR')],['Cliente',nom],['Cédula',ced],['Descripción',desc],['Subtotal',crc(m)],['IVA 13%',crc(iva)],['TOTAL',crc(total)],['Hash SHA-256',hash]].map(([k,v])=>`<div class="row-d"><span style="color:#64748b">${k}</span><span style="font-weight:700;color:${k==='TOTAL'?'#16a34a':'#1e293b'};font-size:${k==='TOTAL'?'18px':'15px'}">${v}</span></div>`).join('')}
+  <div style="margin-top:10px;font-size:12px;color:#94a3b8;line-height:1.6">COOPECRUCENOS R.L. · 3-004-757068 · Ley N°9635 · IVA 13% · Ministerio de Hacienda CR · 2026</div></div>`;
+}
+
+render();
+</script>
+</body>
+</html>
